@@ -46,3 +46,27 @@ class CreateChannelView(View):
             new_channel.save()
             return HttpResponseRedirect('/')
         return HttpResponse('This is Register view. POST Request.')
+
+
+class HomeView(View):
+    template_name = 'index.html'
+
+    def get(self, request):
+        most_recent_videos = Video.objects.order_by('-datetime')[:8]
+        most_recent_channels = Channel.objects.filter()
+
+        channel = False
+        print(request.user.username)
+        if request.user.username != "":
+            # print("YEs")
+            try:
+                channel = Channel.objects.filter(user__username=request.user)
+                print(channel)
+                channel = channel.get()
+            except Channel.DoesNotExist:
+                channel = False
+            # if channel:
+        # print(request.user)
+        return render(request, self.template_name,
+                      {'menu_active_item': 'home', 'most_recent_videos': most_recent_videos,
+                       'most_recent_channels': most_recent_channels, 'channel': channel})
