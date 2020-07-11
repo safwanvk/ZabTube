@@ -1,11 +1,13 @@
+import os
+
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 
 # Create your views here.
 from django.views.generic.base import View
 
-from core.forms import ChannelForm
-from core.models import Video, Channel
+from core.forms import ChannelForm, CommentForm
+from core.models import Video, Channel, Comment
 
 
 class ChannelView(View):
@@ -70,3 +72,35 @@ class HomeView(View):
         return render(request, self.template_name,
                       {'menu_active_item': 'home', 'most_recent_videos': most_recent_videos,
                        'most_recent_channels': most_recent_channels, 'channel': channel})
+
+
+class VideoView(View):
+    template_name = 'video.html'
+
+    def get(self, request, id):
+        # fetch video from DB by ID
+        video_by_id = Video.objects.get(id=id)
+        BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        video_by_id.path = 'http://localhost:5000/get_video/' + video_by_id.path
+        print(video_by_id)
+        print(video_by_id.path)
+
+        context = {'video': video_by_id}
+
+        if request.user.is_authenticated:
+            print('user signed in')
+            comment_form = CommentForm()
+            context['form'] = comment_form
+
+        comments = Comment.objects.filter(video__id=id).order_by('-datetime')[:5]
+        print(comments)
+        context['comments'] = comments
+
+        try:
+            channel = Channel.objects.filter(user__username=request.user).get().channel_name != ""
+            print(channel)
+            context['channel'] = channel
+        except Channel.DoesNotExist:
+            channel = False
+
+        return render(request, self.template_name, context)
