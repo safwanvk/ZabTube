@@ -1,4 +1,4 @@
-% extends "base.html" %}
+{% extends "base.html" %}
 {% load crispy_forms_filters%}
 
 {% block title %}
@@ -10,9 +10,9 @@ Log into your Account
 <div class="login">
     <h1>Login</h1>
     <br>
-    <form action="login" method="POST" role="form">
+    <form method="POST" role="form">
         {% csrf_token %}
-        {{ form.as_table|crispy }}
+        {{ form|crispy }}
         <br>
         <button type="submit" class="btn btn-primary" role="button">Log In</button>
     </form>

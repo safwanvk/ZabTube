@@ -32,7 +32,7 @@
 
                     {% if user.is_authenticated %}
                     <ul class="top_right_content">
-                        <li><a href="/logout">Logout</a></li>
+                        <li><a href="{% url 'accounts:logout' %}">Logout</a></li>
                     </ul>
                         {% if channel %}
                         <ul class="top_right_content">
@@ -48,10 +48,10 @@
                         {% endif %}
                     {% else %}
                     <ul class="top_right_content">
-                        <li><a class="" href="#">Sign Up</a></li>
+                        <li><a href="{% url 'accounts:register' %}">Sign Up</a></li>
                     </ul>
                         <ul class="top_right_content">
-                            <li><a class="" href="#">Sign In</a></li>
+                            <li><a href="{% 'accounts:login' %}">Sign In</a></li>
                         </ul>
                     {% endif %}
                 </div>
