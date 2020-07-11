@@ -7,3 +7,9 @@ class ChannelForm(forms.Form):
 
 class CommentForm(forms.Form):
     text = forms.CharField(label='text', max_length=300)
+
+
+class NewVideoForm(forms.Form):
+    title = forms.CharField(label='Title', max_length=20)
+    description = forms.CharField(label='Description', max_length=300)
+    file = forms.FileField()
