@@ -1,6 +1,7 @@
 import os
 import random
 import string
+from wsgiref.util import FileWrapper
 
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponseRedirect, HttpResponse
@@ -51,6 +52,19 @@ class CreateChannelView(View):
             new_channel.save()
             return HttpResponseRedirect('/')
         return HttpResponse('This is Register view. POST Request.')
+
+class VideoFileView(View):
+
+    def get(self, request, file_name):
+        # print("YYY")
+        BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        print("HELLO")
+        print(BASE_DIR)
+        print(file_name)
+        file = FileWrapper(open(BASE_DIR + '/core/static/videos/' + file_name, 'rb'))
+        response = HttpResponse(file, content_type='video/mp4')
+        response['Content-Disposition'] = 'attachment; filename={}'.format(file_name)
+        return response
 
 
 class HomeView(View):
@@ -175,3 +189,5 @@ class NewVideo(View):
             return HttpResponseRedirect('/video/{}'.format(new_video.id))
         else:
             return HttpResponse('Your form is not valid. Go back and try again.')
+
+

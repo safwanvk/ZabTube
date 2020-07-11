@@ -8,10 +8,10 @@ Create a new Channel
 {% block body %}
         <div class=channelform>
                 <h1>Create your channel</h1>
-                <form action="createchannel" method="POST">
+                <form action="{% url 'core:create_channel' %}" method="POST">
                         {% csrf_token %}
                         <div>Name: </div>
-                        {{form.channel_name|linebreaks}}
+                        {{ form.channel_name|linebreaks }}
                         <br>
                         <button type="submit" class="btn btn-primary">Create Channel!</button>
                 </form>
