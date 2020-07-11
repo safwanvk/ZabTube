@@ -1,6 +1,6 @@
 from django.urls import path
 
-from core.views import ChannelView, CreateChannelView, HomeView, VideoView, CommentView
+from core.views import ChannelView, CreateChannelView, HomeView, VideoView, CommentView, NewVideo
 
 app_name = 'core'
 
@@ -10,4 +10,5 @@ urlpatterns = [
     path('', HomeView.as_view(), name='index'),
     path('video/<int:id>', VideoView.as_view(), name='video'),
     path('comment', CommentView.as_view(), name='comment'),
+    path('new_video', NewVideo.as_view(), name='new_video'),
 ]

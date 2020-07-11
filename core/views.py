@@ -1,12 +1,15 @@
 import os
+import random
+import string
 
+from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 
 # Create your views here.
 from django.views.generic.base import View
 
-from core.forms import ChannelForm, CommentForm
+from core.forms import ChannelForm, CommentForm, NewVideoForm
 from core.models import Video, Channel, Comment
 
 
@@ -122,3 +125,53 @@ class CommentView(View):
             new_comment.save()
             return HttpResponseRedirect('/video/{}'.format(str(video_id)))
         return HttpResponse('This is Register view. POST Request.')
+
+
+class NewVideo(View):
+    template_name = 'new_video.html'
+
+    def get(self, request):
+        if request.user.is_authenticated == False:
+            # return HttpResponse('You have to be logged in, in order to upload a video.')
+            return HttpResponseRedirect('/register')
+
+        try:
+            channel = Channel.objects.filter(user__username=request.user).get().channel_name != ""
+            if channel:
+                # print("HHHEEEEE     ", Channel.objects.filter(user__username = request.user).get().channel_name)
+                form = NewVideoForm()
+                return render(request, self.template_name, {'form': form, 'channel': channel})
+        except Channel.DoesNotExist:
+            return HttpResponseRedirect('/')
+
+    def post(self, request):
+        # pass filled out HTML-Form from View to NewVideoForm()
+        form = NewVideoForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            # create a new Video Entry
+            title = form.cleaned_data['title']
+            description = form.cleaned_data['description']
+            file = form.cleaned_data['file']
+
+            random_char = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+            path = random_char + file.name
+            print("TTTTTTT     ", path)
+            fs = FileSystemStorage(location=os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            filename = fs.save("core/static/videos/" + path, file)
+            file_url = fs.url(filename)
+
+            print(fs)
+            print(filename)
+            print(file_url)
+
+            new_video = Video(title=title,
+                              description=description,
+                              user=request.user,
+                              path=path)
+            new_video.save()
+
+            # redirect to detail view template of a Video
+            return HttpResponseRedirect('/video/{}'.format(new_video.id))
+        else:
+            return HttpResponse('Your form is not valid. Go back and try again.')

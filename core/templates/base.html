@@ -36,7 +36,7 @@
                     </ul>
                         {% if channel %}
                         <ul class="top_right_content">
-                            <li><a class="" href="/new_video">Upload</a></li>
+                            <li><a class="{% if request.path == '/new_video' %} active {% endif %}" href="{% url 'core:new_video' %}">Upload</a></li>
                         </ul>
                         <ul class="top_right_content">
                             <li><a href="/{{ user }}/channel">Welcome {{ user }}</a></li>
